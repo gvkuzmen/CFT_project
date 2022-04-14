@@ -1,0 +1,41 @@
+/* Выборка всего по убыванию значения поля t_num */
+SELECT * 
+FROM test_TABLE
+ORDER BY t_num desc;
+
+
+/* Вывести дни в августе с суммированием значений t_num в порядке возрастания*/
+
+SELECT t_date, sum(t_num)
+FROM test_table 
+GROUP BY t_date 
+HAVING EXTRACT(MONTH FROM t_date) = 8;
+
+/* Вывести 3 записи с максимальными значениями t_num в порядке возрастания*/
+
+SELECT * 
+FROM (SELECT * FROM test_table ORDER BY t_num DESC FETCH FIRST 3 ROWS ONLY)
+ORDER BY t_num;
+
+/* Вывести 1 если t_num от 2 до 5 , иначе 0*/
+
+SELECT t_date, t_num,
+   (CASE WHEN t_num BETWEEN 2 AND 5 THEN 1
+   ELSE 0 END) AS t_num_01
+FROM test_table;
+
+/*Вывести все дни в августе с суммированием значеий t_num по дате*/
+
+WITH all_mounth AS (
+select to_date('01/08/2019','dd/mm/yyyy')+level-1 as New_date, 0 AS new_sum 
+from dual 
+connect by to_date('01/08/2019','DD/MM/YYYY') + level -1 <= to_date('31/08/2019','DD/MM/YYYY')
+
+UNION 
+
+SELECT t_date, sum(t_num)
+FROM test_table 
+GROUP BY t_date
+HAVING EXTRACT(MONTH FROM t_date) = 8
+)
+SELECT * FROM all_mounth;
